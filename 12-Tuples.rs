@@ -3,4 +3,6 @@ fn main() {
     
     println!("Latitude is - {}", location.0);
     println!("Longitute is - {}", location.1);
+
+    let diff_tuple = ("Netizaq", 8, 1.0);
 }
