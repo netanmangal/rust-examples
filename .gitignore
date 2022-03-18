@@ -15,3 +15,8 @@ Cargo.lock
 
 # Executables
 *.exe
+
+
+# Ignore everything except files with .rs extension
+*
+!*.rs
