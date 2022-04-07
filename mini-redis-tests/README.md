@@ -1,3 +1,6 @@
+This repo has been copied from `https://github.com/tokio-rs/mini-redis` and I have taken it for understanding its workflow by writing `unit tests`.
+
+
 # mini-redis
 
 `mini-redis` is an incomplete, idiomatic implementation of a

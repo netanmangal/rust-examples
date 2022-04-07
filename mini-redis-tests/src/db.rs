@@ -376,3 +376,14 @@ async fn purge_expired_tasks(shared: Arc<Shared>) {
 
     debug!("Purge background task shut down")
 }
+
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn initiate_entry() {
+        let entry = super::Entry {id: 1, data: super::Bytes::from(&b"Hello World"[..]), expires_at: Some(super::Instant::now())};
+        assert_eq!(entry.id, 1);
+        assert_eq!(&entry.data[..], b"Hello World");
+    }
+}
