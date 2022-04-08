@@ -512,8 +512,8 @@ mod tests {
         };
 
         let shared = Shared {state: Mutex::new(state1), background_task: Notify::new()};
-        let mut db = Arc::new(shared);
-        let mut ref_db = Arc::get_mut(&mut db).unwrap();
+        let mut db = Db {shared: Arc::new(shared)};
+        let mut ref_db = Arc::get_mut(&mut db.shared).unwrap();
         
         assert_eq!(ref_db.state.lock().unwrap().next_id, 1);
         
