@@ -528,4 +528,37 @@ mod tests {
         // let mut ref_db2 = Arc::get_mut(&mut db2).unwrap();
         // assert_eq!(ref_db2.state.lock().unwrap().next_id, 3);
     }
+
+    #[test]
+    fn initiate_db_drop_guard() {
+        let entry1 = Entry {id: 1, data: Bytes::from(&b"Hello World"[..]), expires_at: Some(Instant::now())};
+        let entry2 = Entry {id: 2, data: Bytes::from(&b"This is Netan Mangal"[..]), expires_at: Some(Instant::now())};
+
+        let (tx, mut _rx1) = broadcast::channel(16);
+        let instant = Instant::now();
+
+        let state = State {
+            entries: HashMap::from([
+                (String::from("key1"), entry1),
+                (String::from("key2"), entry2)
+            ]),
+            pub_sub: HashMap::from([ 
+                (String::from("sub1"), tx.clone()),
+                (String::from("sub2"), tx)
+            ]),
+            expirations: BTreeMap::from([
+                ((instant, 1), String::from("sub1")),
+                ((instant, 2), String::from("sub2"))
+            ]),
+            next_id: 1,
+            shutdown: false
+        };
+
+        let shared = Shared {state: Mutex::new(state), background_task: Notify::new()};
+        let db = Db {shared: Arc::new(shared)};
+        let db_drop_guard = DbDropGuard {db: db};
+
+        assert_eq!(db_drop_guard.db.shared.state.lock().unwrap().next_id, 1);
+
+    }
 }
