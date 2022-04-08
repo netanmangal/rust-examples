@@ -384,25 +384,25 @@ mod tests {
 
     #[test]
     fn initiate_entry() {
-        let entry = super::Entry {id: 1, data: super::Bytes::from(&b"Hello World"[..]), expires_at: Some(super::Instant::now())};
+        let entry = Entry {id: 1, data: Bytes::from(&b"Hello World"[..]), expires_at: Some(Instant::now())};
         assert_eq!(entry.id, 1);
         assert_eq!(&entry.data[..], b"Hello World");
     }
 
     #[test]
     fn initiate_state() {
-        let entry1: Entry = super::Entry {id: 1, data: super::Bytes::from(&b"Hello World"[..]), expires_at: Some(super::Instant::now())};
-        let entry2 = Entry {id: 2, data: super::Bytes::from(&b"This is Netan Mangal"[..]), expires_at: Some(super::Instant::now())};
+        let entry1: Entry = Entry {id: 1, data: Bytes::from(&b"Hello World"[..]), expires_at: Some(Instant::now())};
+        let entry2 = Entry {id: 2, data: Bytes::from(&b"This is Netan Mangal"[..]), expires_at: Some(Instant::now())};
 
         let (tx, mut _rx1) = broadcast::channel(16);
         let instant = Instant::now();
 
-        let state = super::State {
-            entries: super::HashMap::from([
+        let state = State {
+            entries: HashMap::from([
                 (String::from("key1"), entry1),
                 (String::from("key2"), entry2)
             ]),
-            pub_sub: super::HashMap::from([ 
+            pub_sub: HashMap::from([ 
                 (String::from("sub1"), tx.clone()),
                 (String::from("sub2"), tx)
             ]),
@@ -429,5 +429,36 @@ mod tests {
         assert_eq!(state.next_id, 1);
 
         assert_eq!(state.shutdown, false);
+    }
+
+    #[test]
+    fn initiate_shared() {
+        let entry1 = Entry {id: 1, data: Bytes::from(&b"Hello World"[..]), expires_at: Some(Instant::now())};
+        let entry2 = Entry {id: 2, data: Bytes::from(&b"This is Netan Mangal"[..]), expires_at: Some(Instant::now())};
+
+        let (tx, mut _rx1) = broadcast::channel(16);
+        let instant = Instant::now();
+
+        let state = State {
+            entries: HashMap::from([
+                (String::from("key1"), entry1),
+                (String::from("key2"), entry2)
+            ]),
+            pub_sub: HashMap::from([ 
+                (String::from("sub1"), tx.clone()),
+                (String::from("sub2"), tx)
+            ]),
+            expirations: BTreeMap::from([
+                ((instant, 1), String::from("sub1")),
+                ((instant, 2), String::from("sub2"))
+            ]),
+            next_id: 1,
+            shutdown: false
+        };
+
+        let shared = Shared {state: Mutex::new(state), background_task: Notify::new()};
+
+        let shared_state = shared.state.lock().unwrap();
+        assert_eq!(shared_state.next_id, 1);
     }
 }
