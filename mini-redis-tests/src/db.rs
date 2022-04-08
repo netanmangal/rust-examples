@@ -380,10 +380,54 @@ async fn purge_expired_tasks(shared: Arc<Shared>) {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
     fn initiate_entry() {
         let entry = super::Entry {id: 1, data: super::Bytes::from(&b"Hello World"[..]), expires_at: Some(super::Instant::now())};
         assert_eq!(entry.id, 1);
         assert_eq!(&entry.data[..], b"Hello World");
+    }
+
+    #[test]
+    fn initiate_state() {
+        let entry1: Entry = super::Entry {id: 1, data: super::Bytes::from(&b"Hello World"[..]), expires_at: Some(super::Instant::now())};
+        let entry2 = Entry {id: 2, data: super::Bytes::from(&b"This is Netan Mangal"[..]), expires_at: Some(super::Instant::now())};
+
+        let (tx, mut _rx1) = broadcast::channel(16);
+        let instant = Instant::now();
+
+        let state = super::State {
+            entries: super::HashMap::from([
+                (String::from("key1"), entry1),
+                (String::from("key2"), entry2)
+            ]),
+            pub_sub: super::HashMap::from([ 
+                (String::from("sub1"), tx.clone()),
+                (String::from("sub2"), tx)
+            ]),
+            expirations: BTreeMap::from([
+                ((instant, 1), String::from("sub1")),
+                ((instant, 2), String::from("sub2"))
+            ]),
+            next_id: 1,
+            shutdown: false
+        };
+        
+        assert_eq!(state.entries.contains_key("key1"), true);
+        assert_eq!(state.entries.contains_key("key2"), true);
+        assert_ne!(state.entries.contains_key("key3"), true);
+        
+        assert_eq!(state.pub_sub.contains_key("sub1"), true);
+        assert_eq!(state.pub_sub.contains_key("sub2"), true);
+        assert_ne!(state.pub_sub.contains_key("sub3"), true);
+
+        assert_eq!(state.expirations.contains_key( &(instant, 1) ), true);
+        assert_eq!(state.expirations.contains_key( &(instant, 2) ), true);
+        assert_ne!(state.expirations.contains_key( &(instant, 3) ), true);
+
+        assert_eq!(state.next_id, 1);
+
+        assert_eq!(state.shutdown, false);
     }
 }
