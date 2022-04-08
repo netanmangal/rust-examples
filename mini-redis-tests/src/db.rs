@@ -1,3 +1,8 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+#![allow(unused_mut)]
+
+
 use tokio::sync::{broadcast, Notify};
 use tokio::time::{self, Duration, Instant};
 
@@ -460,5 +465,67 @@ mod tests {
 
         let shared_state = shared.state.lock().unwrap();
         assert_eq!(shared_state.next_id, 1);
+    }
+
+    #[test]
+    fn initiate_db() {
+        let entry1 = Entry {id: 1, data: Bytes::from(&b"Hello World"[..]), expires_at: Some(Instant::now())};
+        let entry2 = Entry {id: 2, data: Bytes::from(&b"This is Netan Mangal"[..]), expires_at: Some(Instant::now())};
+        let entry3 = Entry {id: 3, data: Bytes::from(&b"This is Netan Mangal"[..]), expires_at: Some(Instant::now())};
+        let entry4 = Entry {id: 4, data: Bytes::from(&b"This is Netan Mangal"[..]), expires_at: Some(Instant::now())};
+
+        let (tx, mut _rx1) = broadcast::channel(16);
+        let instant = Instant::now();
+
+        let state1 = State {
+            entries: HashMap::from([
+                (String::from("key1"), entry1),
+                (String::from("key2"), entry2)
+            ]),
+            pub_sub: HashMap::from([ 
+                (String::from("sub1"), tx.clone()),
+                (String::from("sub2"), tx.clone())
+            ]),
+            expirations: BTreeMap::from([
+                ((instant, 1), String::from("sub1")),
+                ((instant, 2), String::from("sub2"))
+            ]),
+            next_id: 1,
+            shutdown: false
+        };
+
+        let state2 = State {
+            entries: HashMap::from([
+                (String::from("key3"), entry3),
+                (String::from("key4"), entry4)
+            ]),
+            pub_sub: HashMap::from([ 
+                (String::from("sub3"), tx.clone()),
+                (String::from("sub4"), tx)
+            ]),
+            expirations: BTreeMap::from([
+                ((instant, 3), String::from("sub3")),
+                ((instant, 4), String::from("sub4"))
+            ]),
+            next_id: 3,
+            shutdown: false
+        };
+
+        let shared = Shared {state: Mutex::new(state1), background_task: Notify::new()};
+        let mut db = Arc::new(shared);
+        let mut ref_db = Arc::get_mut(&mut db).unwrap();
+        
+        assert_eq!(ref_db.state.lock().unwrap().next_id, 1);
+        
+        // -/  trying this but not able to do
+        // -/  clone db, make modification to db and it should reflect in db2.
+
+        // let mut db2 = Arc::clone(&mut db);
+        // let shared2 = Shared {state: Mutex::new(state2), background_task: Notify::new()};
+        // ref_db.state.lock().unwrap().next_id = 3;
+        // assert_eq!(ref_db.state.lock().unwrap().next_id, 3);
+
+        // let mut ref_db2 = Arc::get_mut(&mut db2).unwrap();
+        // assert_eq!(ref_db2.state.lock().unwrap().next_id, 3);
     }
 }
