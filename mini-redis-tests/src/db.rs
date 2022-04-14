@@ -561,4 +561,22 @@ mod tests {
         assert_eq!(db_drop_guard.db.shared.state.lock().unwrap().next_id, 1);
 
     }
+
+    #[test]
+    fn test_hash_map() {
+        let h_map = HashMap::from([
+            ("key1", "value1"),
+            ("key2", "value2"),
+            ("key3", "value3")
+        ]);
+
+        assert_eq!( h_map.get("key1").unwrap(), &"value1" );
+        assert_eq!( h_map.get("key2").unwrap(), &"value2" );
+        assert_eq!( h_map.get("key3").unwrap(), &"value3" );
+    }
+
+    #[test]
+    fn test_broadcast() {
+        
+    }
 }
