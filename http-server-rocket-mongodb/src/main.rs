@@ -2,19 +2,16 @@
 
 use rocket::*;
 
+mod student;
+
 #[get("/")]
 fn index() -> String {
     return format!("Hello world. Welcome to index! again");
-}
-
-#[get("/<name>/<age>")]
-fn hello(name: &str, age: Option<u8>) -> String {
-    format!("Hello. Age is {}, name is {}", age.unwrap_or(0), name)
 }
 
 #[launch]
 fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![index])
-        .mount("/hello", routes![hello])
+        .mount("/student", routes![student::hello])
 }
