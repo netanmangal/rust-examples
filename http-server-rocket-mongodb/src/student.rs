@@ -1,6 +1,6 @@
 use rocket::*;
 
-#[get("/<name>/<age>")]
-pub fn hello(name: &str, age: Option<u8>) -> String {
-    format!("Hello. Age is {}, name is {}", age.unwrap_or(0), name)
+#[get("/?<id>")]
+pub fn get_student(id: &str) -> String {
+    format!("Hello.\nFetching details of student - id {}", id)
 }
