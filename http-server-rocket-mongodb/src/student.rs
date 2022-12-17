@@ -1,5 +1,6 @@
+use crate::queryinput::*;
 use crate::state::*;
-use rocket::get;
+use rocket::{get, post};
 
 #[get("/?<id>")]
 pub fn get_student(id: u8) -> String {
@@ -14,4 +15,11 @@ pub fn get_student(id: u8) -> String {
     }
 
     return format!("{:#?}", student);
+}
+
+#[get("/count")]
+pub fn get_student_count() -> String {
+    unsafe {
+        return STUDENT_COUNT.to_string();
+    }
 }

@@ -80,3 +80,5 @@ impl TeacherInfo {
 
 pub static mut STUDENTS: Vec<StudentInfo> = Vec::new();
 pub static mut TEACHERS: Vec<TeacherInfo> = Vec::new();
+pub static mut STUDENT_COUNT: u8 = 0;
+pub static mut TEACHER_COUNT: u8 = 0;

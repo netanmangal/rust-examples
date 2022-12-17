@@ -12,6 +12,9 @@ pub fn init_server() -> String {
 
         TEACHERS.push(TeacherInfo::create_teacher(1, "akash", 45, GENDER::MALE));
         TEACHERS.push(TeacherInfo::create_teacher(2, "preeti", 53, GENDER::FEMALE));
+
+        STUDENT_COUNT += 2;
+        TEACHER_COUNT += 2;
     }
 
     format!("Server init - Success")

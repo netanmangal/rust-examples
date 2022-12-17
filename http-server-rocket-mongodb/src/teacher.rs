@@ -15,3 +15,10 @@ pub fn get_teacher(id: u8) -> String {
 
     format!("{:#?}", teacher)
 }
+
+#[get("/count")]
+pub fn get_teacher_count() -> String {
+    unsafe {
+        return TEACHER_COUNT.to_string();
+    }
+}
