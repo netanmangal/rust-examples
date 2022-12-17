@@ -4,6 +4,7 @@ use rocket::*;
 
 mod student;
 mod teacher;
+mod state;
 
 #[get("/")]
 fn index() -> String {
