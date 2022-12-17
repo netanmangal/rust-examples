@@ -5,6 +5,7 @@ use rocket::*;
 mod student;
 mod teacher;
 mod state;
+mod init;
 
 #[get("/")]
 fn index() -> String {
@@ -14,7 +15,7 @@ fn index() -> String {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .mount("/", routes![index])
+        .mount("/", routes![index, init::init_server])
         .mount("/student", routes![student::get_student])
         .mount("/teacher", routes![teacher::get_teacher])
 }

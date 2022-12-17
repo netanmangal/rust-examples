@@ -1,14 +1,14 @@
 use rocket::serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-enum GENDER {
+pub enum GENDER {
     MALE,
     FEMALE,
     OTHER,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-enum SUBJECTS {
+pub enum SUBJECTS {
     SCIENCE,
     MATHS,
     PUNJABI,
@@ -17,25 +17,35 @@ enum SUBJECTS {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct StudentInfo {
-    id: u8,
-    name: String,
-    age: u8,
-    still_studies: bool,
-    gender: GENDER,
+pub struct StudentInfo {
+    pub id: u8,
+    pub name: String,
+    pub age: u8,
+    pub still_studies: bool,
+    pub gender: GENDER,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-struct TeacherInfo {
-    id: u8,
-    name: String,
-    age: u8,
-    gender: GENDER,
-    subjects: Vec<SUBJECTS>,
+pub struct TeacherInfo {
+    pub id: u8,
+    pub name: String,
+    pub age: u8,
+    pub gender: GENDER,
+    pub subjects: Vec<SUBJECTS>,
 }
 
 impl StudentInfo {
-    fn createStudent(id: u8, name: &str, age: u8, gender: GENDER) -> StudentInfo {
+    pub fn new() -> StudentInfo {
+        StudentInfo {
+            id: 0,
+            name: String::new(),
+            age: 0,
+            still_studies: false,
+            gender: GENDER::OTHER,
+        }
+    }
+
+    pub fn create_student(id: u8, name: &str, age: u8, gender: GENDER) -> StudentInfo {
         StudentInfo {
             id: id,
             name: String::from(name),
@@ -47,7 +57,17 @@ impl StudentInfo {
 }
 
 impl TeacherInfo {
-    fn createTeacher(id: u8, name: &str, age: u8, gender: GENDER) -> TeacherInfo {
+    pub fn new() -> TeacherInfo {
+        TeacherInfo {
+            id: 0,
+            name: String::new(),
+            age: 0,
+            gender: GENDER::OTHER,
+            subjects: Vec::new(),
+        }
+    }
+
+    pub fn create_teacher(id: u8, name: &str, age: u8, gender: GENDER) -> TeacherInfo {
         TeacherInfo {
             id: id,
             name: name.to_string(),
@@ -57,3 +77,6 @@ impl TeacherInfo {
         }
     }
 }
+
+pub static mut STUDENTS: Vec<StudentInfo> = Vec::new();
+pub static mut TEACHERS: Vec<TeacherInfo> = Vec::new();
