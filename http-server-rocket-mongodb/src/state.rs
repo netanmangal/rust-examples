@@ -1,6 +1,6 @@
 use rocket::serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 pub enum GENDER {
     MALE,
     FEMALE,
@@ -16,7 +16,7 @@ pub enum SUBJECTS {
     BIOLOGY,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct StudentInfo {
     pub id: u8,
     pub name: String,
