@@ -7,7 +7,7 @@ pub enum GENDER {
     OTHER,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum SUBJECTS {
     SCIENCE,
     MATHS,
@@ -25,7 +25,7 @@ pub struct StudentInfo {
     pub gender: GENDER,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TeacherInfo {
     pub id: u8,
     pub name: String,
