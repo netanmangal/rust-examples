@@ -7,7 +7,7 @@ pub enum GENDER {
     OTHER,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub enum SUBJECTS {
     SCIENCE,
     MATHS,
@@ -67,13 +67,13 @@ impl TeacherInfo {
         }
     }
 
-    pub fn create_teacher(id: u8, name: &str, age: u8, gender: GENDER) -> TeacherInfo {
+    pub fn create_teacher(id: u8, name: &str, age: u8, gender: GENDER, subjects: &Vec<SUBJECTS>) -> TeacherInfo {
         TeacherInfo {
             id: id,
             name: name.to_string(),
             age: age,
             gender: gender,
-            subjects: vec![SUBJECTS::SCIENCE, SUBJECTS::BIOLOGY],
+            subjects: subjects.clone(),
         }
     }
 }

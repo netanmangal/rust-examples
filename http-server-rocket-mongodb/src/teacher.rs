@@ -32,11 +32,12 @@ pub fn add_teacher(teacher: Json<TeacherQueryInput>) -> Json<TeacherInfo> {
             &teacher.name[..],
             teacher.age,
             teacher.gender,
+            &teacher.subjects
         );
 
         TEACHERS.push(new_teacher.clone());
         TEACHER_COUNT += 1;
-        
+
         return Json(new_teacher);
     }
 }
