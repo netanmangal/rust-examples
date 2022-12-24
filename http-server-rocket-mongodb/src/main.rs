@@ -7,6 +7,7 @@ mod teacher;
 mod state;
 mod init;
 mod query;
+mod db;
 
 #[get("/")]
 fn index() -> String {

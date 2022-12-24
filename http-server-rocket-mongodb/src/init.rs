@@ -1,9 +1,10 @@
 use rocket::post;
-
 use crate::state::*;
+use crate::db;
 
 #[post("/init")]
-pub fn init_server() -> String {
+pub async fn init_server() -> Option<String> {
+    db::connect_db().await.ok();
     // we are using unsafe block because modifying static variables
     // it's because - multiple threads can use static variable simultaneously which is unsafe.
     unsafe {
@@ -17,5 +18,5 @@ pub fn init_server() -> String {
         TEACHER_COUNT += 2;
     }
 
-    format!("Server init - Success")
+    Some(format!("Server init - Success"))
 }
