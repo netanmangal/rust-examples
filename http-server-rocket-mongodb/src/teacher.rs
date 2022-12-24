@@ -1,43 +1,58 @@
 use crate::query::*;
 use crate::state::*;
-use rocket::{serde::json::Json, *};
+use mongodb::bson::doc;
+use mongodb::Database;
+use rocket::serde::json::Json;
+use rocket::{get, post, State};
 
 #[get("/?<id>")]
-pub fn get_teacher(id: u8) -> String {
-    let mut teacher: &TeacherInfo = &TeacherInfo::new();
+pub async fn get_teacher(id: i32, db: &State<Database>) -> Json<TeacherInfo> {
+    let teacher = db
+        .collection::<TeacherInfo>("teacher")
+        .find_one(doc! { "id": id }, None)
+        .await
+        .unwrap()
+        .expect("Missing teacher with given id.");
 
-    unsafe {
-        for (_, o) in TEACHERS.iter().enumerate() {
-            if id == o.id {
-                teacher = o;
-            }
-        }
-    }
-
-    format!("{:#?}", teacher)
+    Json(teacher)
 }
 
 #[get("/count")]
-pub fn get_teacher_count() -> String {
-    unsafe {
-        return TEACHER_COUNT.to_string();
-    }
+pub async fn get_teacher_count(db: &State<Database>) -> String {
+    let teacher_count = db
+        .collection::<TeacherInfo>("teacher")
+        .count_documents(None, None)
+        .await
+        .unwrap();
+
+    teacher_count.to_string()
 }
 
 #[post("/add", format = "application/json", data = "<teacher>")]
-pub fn add_teacher(teacher: Json<TeacherQueryInput>) -> Json<TeacherInfo> {
-    unsafe {
-        let new_teacher = TeacherInfo::create_teacher(
-            TEACHER_COUNT + 1,
-            &teacher.name[..],
-            teacher.age,
-            teacher.gender,
-            &teacher.subjects
-        );
+pub async fn add_teacher(
+    teacher: Json<TeacherQueryInput>,
+    db: &State<Database>,
+) -> Json<TeacherInfo> {
+    let teacher_count: u8 = db
+        .collection::<TeacherInfo>("teacher")
+        .count_documents(None, None)
+        .await
+        .unwrap()
+        .try_into()
+        .unwrap();
 
-        TEACHERS.push(new_teacher.clone());
-        TEACHER_COUNT += 1;
+    let new_teacher = TeacherInfo::create_teacher(
+        teacher_count + 1,
+        &teacher.name[..],
+        teacher.age,
+        teacher.gender,
+        &teacher.subjects,
+    );
 
-        return Json(new_teacher);
-    }
+    db.collection::<TeacherInfo>("teacher")
+        .insert_one(&new_teacher, None)
+        .await
+        .ok();
+
+    return Json(new_teacher);
 }
