@@ -1,17 +1,24 @@
 use dotenv::dotenv;
-use mongodb::{Client, options::ClientOptions};
+use mongodb::{options::ClientOptions, Client};
 use std::error::Error;
 
-pub async fn connect_db() -> Result<(), Box<dyn Error>> {
-    dotenv().ok();
+pub struct DB {
+    pub client: Client,
+}
 
-    let mongodb_uri: String = dotenv::var("MONGODB_URI").expect("Expected env variable: MONGODB_URI");
-    let mut client_options: ClientOptions = ClientOptions::parse( mongodb_uri ).await?;
-    client_options.app_name = Some("Student-Teacher".to_string());
+impl DB {
+    pub async fn connect_db() -> Result<Self, Box<dyn Error>> {
+        dotenv().ok();
 
-    let client: Client = Client::with_options(client_options)?;
+        let mongodb_uri: String =
+            dotenv::var("MONGODB_URI").expect("Expected env variable: MONGODB_URI");
+        let mut client_options: ClientOptions = ClientOptions::parse(mongodb_uri).await?;
+        client_options.app_name = Some("Student-Teacher".to_string());
 
-    println!("Database connected.");
+        let client: Client = Client::with_options(client_options)?;
 
-    Ok(())
+        println!("Database connected.");
+
+        Ok(Self { client })
+    }
 }
