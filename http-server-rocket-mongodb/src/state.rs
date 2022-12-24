@@ -35,16 +35,6 @@ pub struct TeacherInfo {
 }
 
 impl StudentInfo {
-    pub fn new() -> StudentInfo {
-        StudentInfo {
-            id: 0,
-            name: String::new(),
-            age: 0,
-            still_studies: false,
-            gender: GENDER::OTHER,
-        }
-    }
-
     pub fn create_student(id: u8, name: &str, age: u8, gender: GENDER) -> StudentInfo {
         StudentInfo {
             id: id,
@@ -78,7 +68,5 @@ impl TeacherInfo {
     }
 }
 
-pub static mut STUDENTS: Vec<StudentInfo> = Vec::new();
 pub static mut TEACHERS: Vec<TeacherInfo> = Vec::new();
-pub static mut STUDENT_COUNT: u8 = 0;
 pub static mut TEACHER_COUNT: u8 = 0;

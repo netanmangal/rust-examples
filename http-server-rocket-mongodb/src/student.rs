@@ -1,44 +1,57 @@
 use crate::query::*;
 use crate::state::*;
-use rocket::{get, post};
+use mongodb::bson::doc;
+use mongodb::Database;
 use rocket::serde::json::Json;
+use rocket::{get, post, State};
 
 #[get("/?<id>")]
-pub fn get_student(id: u8) -> String {
-    let mut student: &StudentInfo = &StudentInfo::new();
+pub async fn get_student(id: i32, db: &State<Database>) -> Json<StudentInfo> {
+    let r = db
+        .collection::<StudentInfo>("student")
+        .find_one(doc! { "id": id }, None)
+        .await
+        .unwrap()
+        .expect("Missing student with given id.");
 
-    unsafe {
-        for (_, o) in STUDENTS.iter().enumerate() {
-            if id == o.id {
-                student = o;
-            }
-        }
-    }
-
-    return format!("{:#?}", student);
+    return Json(r);
 }
 
 #[get("/count")]
-pub fn get_student_count() -> String {
-    unsafe {
-        return STUDENT_COUNT.to_string();
-    }
+pub async fn get_student_count(db: &State<Database>) -> String {
+    let count: u64 = db
+        .collection::<StudentInfo>("student")
+        .count_documents(None, None)
+        .await
+        .unwrap();
+
+    count.to_string()
 }
 
 #[post("/add", format = "application/json", data = "<student>")]
-pub fn add_student(student: Json<StudentQueryInput>) -> Json<StudentInfo> {
-    unsafe {
-        let new_student = StudentInfo::create_student(
-            STUDENT_COUNT + 1,
-            &student.name[..],
-            student.age,
-            student.gender,
-        );
+pub async fn add_student(
+    student: Json<StudentQueryInput>,
+    db: &State<Database>,
+) -> Json<StudentInfo> {
+    let student_count: u8 = db
+        .collection::<StudentInfo>("student")
+        .count_documents(None, None)
+        .await
+        .unwrap()
+        .try_into()
+        .unwrap(); // student_coint is u64. so try_into is used to convert to u8
 
-        STUDENTS.push(new_student.clone());
+    let new_student = StudentInfo::create_student(
+        student_count + 1,
+        &student.name[..],
+        student.age,
+        student.gender,
+    );
 
-        STUDENT_COUNT += 1;
+    db.collection::<StudentInfo>("student")
+        .insert_one(&new_student, None)
+        .await
+        .ok();
 
-        return Json(new_student);
-    }
+    return Json(new_student);
 }
