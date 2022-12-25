@@ -18,5 +18,10 @@ pub struct TeacherQueryInput {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TeacherDeleteQueryInput {
-    pub id: i32
+    pub id: i32,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct StudentDeleteQueryInput {
+    pub id: i32,
 }

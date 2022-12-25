@@ -26,7 +26,9 @@ async fn rocket() -> _ {
             routes![
                 student::get_student,
                 student::get_student_count,
-                student::add_student
+                student::add_student,
+                student::update_student,
+                student::delete_student
             ],
         )
         .mount(
