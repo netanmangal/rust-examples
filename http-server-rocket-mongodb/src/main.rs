@@ -34,7 +34,9 @@ async fn rocket() -> _ {
             routes![
                 teacher::get_teacher,
                 teacher::get_teacher_count,
-                teacher::add_teacher
+                teacher::add_teacher,
+                teacher::update_teacher,
+                teacher::delete_teacher
             ],
         )
         .manage(db.client.database("RustMongo"))

@@ -1,9 +1,9 @@
 use crate::query::*;
 use crate::state::*;
-use mongodb::bson::doc;
+use mongodb::bson::{self, doc};
 use mongodb::Database;
 use rocket::serde::json::Json;
-use rocket::{get, post, State};
+use rocket::{delete, get, post, put, State};
 
 #[get("/?<id>")]
 pub async fn get_teacher(id: i32, db: &State<Database>) -> Json<TeacherInfo> {
@@ -55,4 +55,37 @@ pub async fn add_teacher(
         .ok();
 
     return Json(new_teacher);
+}
+
+#[put("/update", format = "application/json", data = "<teacher>")]
+pub async fn update_teacher(teacher: Json<TeacherInfo>, db: &State<Database>) -> Json<TeacherInfo> {
+    db.collection::<TeacherInfo>("teacher")
+        .update_one(
+            doc! {
+                "id": teacher.id
+            },
+            doc! {
+                "$set": bson::to_bson( &(teacher.clone()).into_inner() ).unwrap()
+            },
+            None,
+        )
+        .await
+        .ok();
+
+    return teacher;
+}
+
+#[delete("/delete", format = "application/json", data = "<id>")]
+pub async fn delete_teacher(id: Json<TeacherDeleteQueryInput>, db: &State<Database>) -> String {
+    db.collection::<TeacherInfo>("teacher")
+        .delete_one(
+            doc! {
+                "id": id.into_inner().id
+            },
+            None,
+        )
+        .await
+        .ok();
+
+    format!("Deleted successfully")
 }

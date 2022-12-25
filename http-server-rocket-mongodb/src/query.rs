@@ -15,3 +15,8 @@ pub struct TeacherQueryInput {
     pub gender: GENDER,
     pub subjects: Vec<SUBJECTS>,
 }
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct TeacherDeleteQueryInput {
+    pub id: i32
+}
