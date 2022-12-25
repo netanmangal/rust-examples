@@ -33,13 +33,13 @@ pub async fn add_student(
     student: Json<StudentQueryInput>,
     db: &State<Database>,
 ) -> Json<StudentInfo> {
-    let student_count: u8 = db
+    let student_count: i32 = db
         .collection::<StudentInfo>("student")
         .count_documents(None, None)
         .await
         .unwrap()
         .try_into()
-        .unwrap(); // student_coint is u64. so try_into is used to convert to u8
+        .unwrap(); // student_coint is u64. so try_into is used to convert to i32
 
     let new_student = StudentInfo::create_student(
         student_count + 1,

@@ -4,14 +4,14 @@ use rocket::serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct StudentQueryInput {
     pub name: String,
-    pub age: u8,
+    pub age: i32,
     pub gender: GENDER,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TeacherQueryInput {
     pub name: String,
-    pub age: u8,
+    pub age: i32,
     pub gender: GENDER,
-    pub subjects: Vec<SUBJECTS>
+    pub subjects: Vec<SUBJECTS>,
 }

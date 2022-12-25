@@ -18,24 +18,24 @@ pub enum SUBJECTS {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct StudentInfo {
-    pub id: u8,
+    pub id: i32,
     pub name: String,
-    pub age: u8,
+    pub age: i32,
     pub still_studies: bool,
     pub gender: GENDER,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TeacherInfo {
-    pub id: u8,
+    pub id: i32,
     pub name: String,
-    pub age: u8,
+    pub age: i32,
     pub gender: GENDER,
     pub subjects: Vec<SUBJECTS>,
 }
 
 impl StudentInfo {
-    pub fn create_student(id: u8, name: &str, age: u8, gender: GENDER) -> StudentInfo {
+    pub fn create_student(id: i32, name: &str, age: i32, gender: GENDER) -> StudentInfo {
         StudentInfo {
             id: id,
             name: String::from(name),
@@ -47,17 +47,13 @@ impl StudentInfo {
 }
 
 impl TeacherInfo {
-    pub fn new() -> TeacherInfo {
-        TeacherInfo {
-            id: 0,
-            name: String::new(),
-            age: 0,
-            gender: GENDER::OTHER,
-            subjects: Vec::new(),
-        }
-    }
-
-    pub fn create_teacher(id: u8, name: &str, age: u8, gender: GENDER, subjects: &Vec<SUBJECTS>) -> TeacherInfo {
+    pub fn create_teacher(
+        id: i32,
+        name: &str,
+        age: i32,
+        gender: GENDER,
+        subjects: &Vec<SUBJECTS>,
+    ) -> TeacherInfo {
         TeacherInfo {
             id: id,
             name: name.to_string(),
@@ -67,6 +63,3 @@ impl TeacherInfo {
         }
     }
 }
-
-pub static mut TEACHERS: Vec<TeacherInfo> = Vec::new();
-pub static mut TEACHER_COUNT: u8 = 0;

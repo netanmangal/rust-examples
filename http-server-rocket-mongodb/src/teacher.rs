@@ -33,7 +33,7 @@ pub async fn add_teacher(
     teacher: Json<TeacherQueryInput>,
     db: &State<Database>,
 ) -> Json<TeacherInfo> {
-    let teacher_count: u8 = db
+    let teacher_count: i32 = db
         .collection::<TeacherInfo>("teacher")
         .count_documents(None, None)
         .await

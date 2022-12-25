@@ -1,14 +1,14 @@
 #![feature(proc_macro_hygiene, decl_macro)]
 
-mod student;
-mod teacher;
-mod state;
+mod db;
 mod init;
 mod query;
-mod db;
+mod state;
+mod student;
+mod teacher;
 
-use rocket::*;
 use db::DB;
+use rocket::*;
 
 #[get("/")]
 fn index() -> String {
@@ -20,8 +20,22 @@ async fn rocket() -> _ {
     let db: DB = DB::connect_db().await.unwrap();
 
     rocket::build()
-    .mount("/", routes![index, init::init_server])
-    .mount("/student", routes![student::get_student, student::get_student_count, student::add_student])
-    .mount("/teacher", routes![teacher::get_teacher, teacher::get_teacher_count, teacher::add_teacher])
-    .manage(db.client.database("RustMongo"))
+        .mount("/", routes![index, init::init_server])
+        .mount(
+            "/student",
+            routes![
+                student::get_student,
+                student::get_student_count,
+                student::add_student
+            ],
+        )
+        .mount(
+            "/teacher",
+            routes![
+                teacher::get_teacher,
+                teacher::get_teacher_count,
+                teacher::add_teacher
+            ],
+        )
+        .manage(db.client.database("RustMongo"))
 }
